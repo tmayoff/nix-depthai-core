@@ -1,0 +1,22 @@
+name: Build + Cache
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v11
+      - uses: DeterminateSystems/flake-checker-action@v7
+      - uses: DeterminateSystems/magic-nix-cache-action@v6
+      - uses: cachix/cachix-action@v14
+        with:
+          name: tmayoff
+          authToken: ${{ secrets.CACHIX_AUTH }}
+      - name: Build and cache
+        run: nix build --json | jq -r '.[].outputs | to_entries[].value' | cachix push tmayoff
