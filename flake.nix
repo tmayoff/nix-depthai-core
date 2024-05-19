@@ -68,27 +68,19 @@
             cp -r include $out
           '';
         };
-
-        xlink = pkgs.stdenv.mkDerivation {
-          name = "XLink";
-          src = pkgs.fetchFromGitHub {
-            name = "xlink";
-            owner = "luxonis";
-            repo = "XLink";
-            rev = "e9eb1ef38030176ad70cddd3b545d5e6c509f1e1";
-            hash = "sha256-D0aKNni8LDqlWtllHwS/BQ2BGdB1GN1k9BDgjEgjEYM=";
-          };
-
-          buildInputs = [
-            pkgs.cmake
-          ];
-        };
-      in rec {
+      in {
         packages.depthai = pkgs.stdenv.mkDerivation {
           name = "depthai";
           version = "2.25.1";
 
           srcs = [
+            (pkgs.fetchFromGitHub {
+              name = "xlink";
+              owner = "luxonis";
+              repo = "XLink";
+              rev = "e9eb1ef38030176ad70cddd3b545d5e6c509f1e1";
+              hash = "sha256-D0aKNni8LDqlWtllHwS/BQ2BGdB1GN1k9BDgjEgjEYM=";
+            })
             (pkgs.fetchFromGitHub {
               name = "depthai-core";
               owner = "luxonis";
@@ -99,6 +91,10 @@
           ];
 
           sourceRoot = "depthai-core";
+
+          patches = [
+            ./patches/deps.patch
+          ];
 
           nativeBuildInputs = with pkgs; [
             git
@@ -116,32 +112,17 @@
             fp16
             nlohmann_json
             libnop
-            xlink
+            # xlink
           ];
 
           cmakeFlags = [
             "-DHUNTER_ENABLED=Off"
             "-DDDEPTHAI_ENABLE_BACKWARD=Off"
+            "-DDEPTHAI_XLINK_LOCAL=/build/xlink"
           ];
         };
 
         packages.default = self.packages.${system}.depthai;
-
-        devShell = pkgs.mkShell {
-          inputsFrom = [packages.depthai];
-
-          nativeBuildInputs = with pkgs; [
-            cmakeWithGui
-          ];
-          # nativeBuildInputs = with pkgs; [
-          #   cmake
-          #   pkg-config
-          # ];
-
-          # buildInputs = with pkgs; [
-          #   bzip2
-          # ];
-        };
       }
     );
 }
