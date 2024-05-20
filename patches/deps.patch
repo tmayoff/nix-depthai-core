@@ -1,8 +1,8 @@
 diff --git a/cmake/depthaiDependencies.cmake b/cmake/depthaiDependencies.cmake
-index 9be00b7f..94a15254 100644
+index 9be00b7f..a632ad31 100644
 --- a/cmake/depthaiDependencies.cmake
 +++ b/cmake/depthaiDependencies.cmake
-@@ -31,10 +31,10 @@ endif()
+@@ -31,19 +31,19 @@ endif()
  if(NOT CONFIG_MODE OR (CONFIG_MODE AND NOT DEPTHAI_SHARED_LIBS))
  
      # BZip2 (for bspatch)
@@ -14,4 +14,17 @@ index 9be00b7f..94a15254 100644
 +    find_package(FP16 REQUIRED)
  
      # libarchive for firmware packages
-     find_package(archive_static ${_QUIET} CONFIG REQUIRED)
+-    find_package(archive_static ${_QUIET} CONFIG REQUIRED)
+-    find_package(lzma ${_QUIET} CONFIG REQUIRED)
++    find_package(LibArchive REQUIRED)
++    find_package(LibLZMA REQUIRED)
+     # ZLIB for compressing Apps
+-    find_package(ZLIB CONFIG REQUIRED)
++    find_package(ZLIB REQUIRED)
+ 
+     # spdlog for library and device logging
+-    find_package(spdlog ${_QUIET} CONFIG REQUIRED)
++    find_package(spdlog REQUIRED)
+ 
+     # Backward
+     if(DEPTHAI_ENABLE_BACKWARD)

@@ -54,19 +54,28 @@
             name = "libnop";
             owner = "luxonis";
             repo = "libnop";
-            rev = "ab842f51dc2eb13916dc98417c2186b78320ed10";
+            rev = "2f19ad3ff3b40a323fa6777cb0b7594202769a72";
             hash = "sha256-d2z/lDI9pe5TR82MxGkR9bBMNXPvzqb9Gsd5jOv6x1A=";
           };
 
           hardeningDisable = ["all"];
+          nativeBuildInputs = [pkgs.cmake];
           buildInputs = [
             pkgs.gtest
           ];
+        };
 
-          installPhase = ''
-            mkdir $out
-            cp -r include $out
-          '';
+        artifacts_base_url = "https://artifacts.luxonis.com/artifactory";
+        bootloader_version = "0.0.24";
+        device_side_commit = "8c3d6ac1c77b0bf7f9ea6fd4d962af37663d2fbd";
+
+        bootloader_filename = "depthai-bootloader-fwp${bootloader_version}.tar.xz";
+        device_side_filename = "depthai-device-fwp-${device_side_commit}.tar.xz";
+
+        firmware = pkgs.fetchurl {
+          name = "depthai-fwp";
+          url = "${artifacts_base_url}/luxonis-myriad-snapshot-local/depthai-device-side/${device_side_commit}/${device_side_filename};unpack=0;name=device-fwp";
+          hash = "sha256-ewNrmrG1wg033/1Jd8y+HEO1Tb93Ciq7zc/T1P/fBLE=";
         };
       in {
         packages.depthai = pkgs.stdenv.mkDerivation {
@@ -75,18 +84,23 @@
 
           srcs = [
             (pkgs.fetchFromGitHub {
+              name = "libusb";
+              owner = "luxonis";
+              repo = "libusb";
+              rev = "b7e4548958325b18feb73977163ad44398099534";
+              hash = "sha256-DjT7ooqQeRIXt2pRwznaT7twpzOVAea62ngJk1y2mUI=";
+            })
+            (pkgs.fetchFromGitHub {
               name = "xlink";
               owner = "luxonis";
               repo = "XLink";
               rev = "e9eb1ef38030176ad70cddd3b545d5e6c509f1e1";
               hash = "sha256-D0aKNni8LDqlWtllHwS/BQ2BGdB1GN1k9BDgjEgjEYM=";
             })
-            (pkgs.fetchFromGitHub {
+            (pkgs.fetchzip {
               name = "depthai-core";
-              owner = "luxonis";
-              repo = "depthai-core";
-              rev = "v2.25.1";
-              hash = "sha256-jcuuUH+UMgQaNNnY6tpoA4rj0vq/pXcN+0gB11Ucx4A=";
+              url = "https://github.com/luxonis/depthai-core/releases/download/v2.25.1/depthai-core-v2.25.1.tar.gz";
+              hash = "sha256-lsQzdkUz2Soil49CnXHfF/h7M0iFOjnx7W/xzOBAKzE=";
             })
           ];
 
@@ -99,7 +113,6 @@
           nativeBuildInputs = with pkgs; [
             git
             cmake
-            lomiri.cmake-extras
             pkg-config
           ];
 
@@ -112,13 +125,16 @@
             fp16
             nlohmann_json
             libnop
-            # xlink
+            libusb
           ];
 
           cmakeFlags = [
             "-DHUNTER_ENABLED=Off"
-            "-DDDEPTHAI_ENABLE_BACKWARD=Off"
+            "-DDEPTHAI_ENABLE_BACKWARD=Off"
             "-DDEPTHAI_XLINK_LOCAL=/build/xlink"
+            "-DXLINK_LIBUSB_LOCAL=/build/libusb"
+            "-DDEPTHAI_CMD_PATH=${firmware}"
+            "-DDEPTHAI_FWP_DEVICE_SIDE_FILENAME=${firmware}"
           ];
         };
 
