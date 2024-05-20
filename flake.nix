@@ -69,13 +69,19 @@
         bootloader_version = "0.0.24";
         device_side_commit = "8c3d6ac1c77b0bf7f9ea6fd4d962af37663d2fbd";
 
-        bootloader_filename = "depthai-bootloader-fwp${bootloader_version}.tar.xz";
+        bootloader_filename = "depthai-bootloader-fwp-${bootloader_version}.tar.xz";
         device_side_filename = "depthai-device-fwp-${device_side_commit}.tar.xz";
 
         firmware = pkgs.fetchurl {
           name = "depthai-fwp";
           url = "${artifacts_base_url}/luxonis-myriad-snapshot-local/depthai-device-side/${device_side_commit}/${device_side_filename};unpack=0;name=device-fwp";
           hash = "sha256-ewNrmrG1wg033/1Jd8y+HEO1Tb93Ciq7zc/T1P/fBLE=";
+        };
+        # https://artifacts.luxonis.com/artifactory/luxonis-myriad-release-local/depthai-bootloader/0.0.17/depthai-bootloader-fwp-0.0.17.tar.xz
+        bootloader = pkgs.fetchurl {
+          name = "depthai-bootloader";
+          url = "${artifacts_base_url}/luxonis-myriad-release-local/depthai-bootloader/${bootloader_version}/${bootloader_filename};unpack=0;name=bootloader-fwp";
+          hash = "sha256-yRPGNshmUuqW7aITWlF2IPfVKNY1fdxpft+iB2KnyzA=";
         };
       in {
         packages.depthai = pkgs.stdenv.mkDerivation {
@@ -107,7 +113,8 @@
           sourceRoot = "depthai-core";
 
           patches = [
-            ./patches/deps.patch
+            # ./patches/deps.patch
+            ./patches/001-maincmake.patch
           ];
 
           nativeBuildInputs = with pkgs; [
@@ -133,8 +140,9 @@
             "-DDEPTHAI_ENABLE_BACKWARD=Off"
             "-DDEPTHAI_XLINK_LOCAL=/build/xlink"
             "-DXLINK_LIBUSB_LOCAL=/build/libusb"
-            "-DDEPTHAI_CMD_PATH=${firmware}"
-            "-DDEPTHAI_FWP_DEVICE_SIDE_FILENAME=${firmware}"
+            # "-DDEPTHAI_CMD_PATH=${firmware}"
+            "-DDEPTHAI_BOOTLOADER_FWP=${bootloader}"
+            "-DDEPTHAI_DEVICE_FWP=${firmware}"
           ];
         };
 
