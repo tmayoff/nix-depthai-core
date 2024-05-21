@@ -14,6 +14,6 @@ jobs:
       - uses: "DeterminateSystems/nix-installer-action@main"
       - uses: "DeterminateSystems/flakehub-push@main"
         with:
-          name: "tmayoff/nix-opendds"
+          name: "tmayoff/nix-depthai-core"
           rolling: true
           visibility: "unlisted"
