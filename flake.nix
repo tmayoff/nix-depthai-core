@@ -13,6 +13,20 @@
           inherit system;
         };
 
+        spdlog = pkgs.spdlog.overrideAttrs {
+          version = "1.9.2";
+          propagatedBuildInputs = [pkgs.fmt_8];
+          cmakeFlags = [
+            "-DSPDLOG_BUILD_SHARED=OFF"
+            "-DSPDLOG_BUILD_STATIC=ON"
+            "-DSPDLOG_BUILD_EXAMPLE=OFF"
+            "-DSPDLOG_BUILD_BENCH=OFF"
+            "-DSPDLOG_BUILD_TESTS=ON"
+            "-DSPDLOG_FMT_EXTERNAL=ON"
+            "-DSPDLOG_USE_STD_FORMAT=Off"
+          ];
+        };
+
         fp16 = pkgs.stdenv.mkDerivation {
           name = "FP16";
           srcs = [
@@ -103,6 +117,13 @@
               rev = "e9eb1ef38030176ad70cddd3b545d5e6c509f1e1";
               hash = "sha256-D0aKNni8LDqlWtllHwS/BQ2BGdB1GN1k9BDgjEgjEYM=";
             })
+            (pkgs.fetchFromGitHub {
+              name = "libnop";
+              owner = "luxonis";
+              repo = "libnop";
+              rev = "2f19ad3ff3b40a323fa6777cb0b7594202769a72";
+              hash = "sha256-d2z/lDI9pe5TR82MxGkR9bBMNXPvzqb9Gsd5jOv6x1A=";
+            })
             (pkgs.fetchzip {
               name = "depthai-core";
               url = "https://github.com/luxonis/depthai-core/releases/download/v2.25.1/depthai-core-v2.25.1.tar.gz";
@@ -113,12 +134,12 @@
           sourceRoot = "depthai-core";
 
           patches = [
-            # ./patches/deps.patch
+            ./patches/deps.patch
             ./patches/001-maincmake.patch
           ];
 
           nativeBuildInputs = with pkgs; [
-            git
+            # git
             cmake
             pkg-config
           ];
@@ -136,11 +157,12 @@
           ];
 
           cmakeFlags = [
+            "-DBUILD_SHARED_LIBS=ON"
             "-DHUNTER_ENABLED=Off"
             "-DDEPTHAI_ENABLE_BACKWARD=Off"
             "-DDEPTHAI_XLINK_LOCAL=/build/xlink"
             "-DXLINK_LIBUSB_LOCAL=/build/libusb"
-            # "-DDEPTHAI_CMD_PATH=${firmware}"
+            "-DDEPTHAI_BINARIES_RESOURCE_COMPILE=ON"
             "-DDEPTHAI_BOOTLOADER_FWP=${bootloader}"
             "-DDEPTHAI_DEVICE_FWP=${firmware}"
           ];

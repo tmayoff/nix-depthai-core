@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 40567219..68ee5ff7 100644
+index 40567219..de699f78 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -131,7 +131,7 @@ endif()
@@ -32,7 +32,7 @@ index 40567219..68ee5ff7 100644
      set(DEPTHAI_BOOTLOADER_SHARED_COMMIT_HASH_ENFORCE ON)
  endif()
  
-+if(DEPTHAI_BINRARIES_RESOURCE_COMPILE)
++if(DEPTHAI_BINARIES_RESOURCE_COMPILE)
 +    message(STATUS "LIST OF RESOURCE COMPILED FILES: ${RESOURCE_COMPILED_FILES}")
  
 -# Then get the Depthai device side binaries (local or download)
@@ -84,3 +84,40 @@ index 40567219..68ee5ff7 100644
      # Add RC and resource compile the binares
      include(CMakeRC)
  
+@@ -448,11 +407,11 @@ target_link_libraries(${TARGET_CORE_NAME}
+     PRIVATE
+         XLink
+         Threads::Threads
+-        BZip2::bz2
++        BZip2::BZip2
+         FP16::fp16
+-        archive_static
++        LibArchive::LibArchive
+         spdlog::spdlog
+-        ZLIB::zlib
++        ZLIB::ZLIB
+ )
+ 
+ # Add compile & CMake definitions
+@@ -711,8 +670,10 @@ configure_file("cmake/${PROJECT_NAME}Dependencies.cmake" ${PROJECT_NAME}Dependen
+ write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake VERSION ${PROJECT_VERSION} COMPATIBILITY AnyNewerVersion)
+ 
+ # Configure config file (one for exporting build directory, one for installation)
++if (HUNTER_ENABLED)
+ file(RELATIVE_PATH DEPTHAI_DEPENDENCIES_INSTALLATION_PATH_REL "${CMAKE_CURRENT_BINARY_DIR}" "${HUNTER_INSTALL_PREFIX}")
+ configure_file(cmake/${PROJECT_NAME}Config.cmake.in ${PROJECT_NAME}Config.cmake @ONLY)
++endif()
+ 
+ # Config for installation
+ set(DEPTHAI_DEPENDENCIES_INSTALLATION_PATH_REL "./dependencies")
+@@ -751,7 +712,9 @@ if(DEPTHAI_INSTALL)
+     # Install depthai-bootloader-shared public headers
+     install(DIRECTORY "${DEPTHAI_BOOTLOADER_SHARED_PUBLIC_INCLUDE}/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+     # Install Hunter dependencies
+-    install(DIRECTORY "${HUNTER_INSTALL_PREFIX}/" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/dependencies")
++    if(HUNTER_ENABLED)
++        install(DIRECTORY "${HUNTER_INSTALL_PREFIX}/" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}/dependencies")
++    endif()
+     # Install resources if not RC'd
+     if(NOT DEPTHAI_BINARIES_RESOURCE_COMPILE)
+         install(DIRECTORY "${DEPTHAI_RESOURCES_OUTPUT_DIR}/" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
