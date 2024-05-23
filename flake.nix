@@ -14,16 +14,16 @@
         };
 
         spdlog = pkgs.spdlog.overrideAttrs {
-          version = "1.9.2";
+          version = "1.8.2";
           propagatedBuildInputs = [pkgs.fmt_8];
           cmakeFlags = [
-            "-DSPDLOG_BUILD_SHARED=OFF"
-            "-DSPDLOG_BUILD_STATIC=ON"
-            "-DSPDLOG_BUILD_EXAMPLE=OFF"
-            "-DSPDLOG_BUILD_BENCH=OFF"
-            "-DSPDLOG_BUILD_TESTS=ON"
+            "-DSPDLOG_BUILD_SHARED=Off"
+            "-DSPDLOG_BUILD_STATIC=On"
+            "-DSPDLOG_BUILD_EXAMPLE=Off"
+            "-DSPDLOG_BUILD_BENCH=Off"
+            "-DSPDLOG_BUILD_TESTS=Off"
             "-DSPDLOG_FMT_EXTERNAL=ON"
-            "-DSPDLOG_USE_STD_FORMAT=Off"
+            "-DSPDLOG_USE_STD_FORMAT=OFF"
           ];
         };
 
@@ -154,6 +154,10 @@
             nlohmann_json
             libnop
             libusb
+
+            # Optional features
+            opencv
+            pcl
           ];
 
           cmakeFlags = [
