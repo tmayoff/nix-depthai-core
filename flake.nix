@@ -2,7 +2,7 @@
   description = "Packaging depthai with nix";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs_21.url = "github:nixos/nixpkgs/nixos-21.05";
   };
@@ -18,7 +18,7 @@
         pkgs_21 = import nixpkgs_21 {
           inherit system;
         };
-      
+
         overlays = [
           (final: prev: {
             fmt = prev.fmt.overrideAttrs (old: {
@@ -74,7 +74,23 @@
           ];
         };
 
-        
+        libnop = pkgs.stdenv.mkDerivation {
+          name = "libnop";
+          src = pkgs.fetchFromGitHub {
+            name = "libnop";
+            owner = "luxonis";
+            repo = "libnop";
+            rev = "2f19ad3ff3b40a323fa6777cb0b7594202769a72";
+            hash = "sha256-SIAceW4rpFeMROjPrKms1rJSXj/EX9bAEFqt9Su/LQk=";
+          };
+
+          hardeningDisable = ["all"];
+          nativeBuildInputs = [pkgs.cmake];
+          buildInputs = [
+            pkgs.gtest
+          ];
+        };
+
         artifacts_base_url = "https://artifacts.luxonis.com/artifactory";
         bootloader_version = "0.0.24";
         device_side_commit = "8c3d6ac1c77b0bf7f9ea6fd4d962af37663d2fbd";
@@ -99,13 +115,13 @@
           version = "2.25.1";
 
           srcs = [
-            # (pkgs.fetchFromGitHub {
-            #   name = "libusb";
-            #   owner = "luxonis";
-            #   repo = "libusb";
-            #   rev = "b7e4548958325b18feb73977163ad44398099534";
-            #   hash = "sha256-DjT7ooqQeRIXt2pRwznaT7twpzOVAea62ngJk1y2mUI=";
-            # })
+            (pkgs.fetchFromGitHub {
+              name = "libusb";
+              owner = "luxonis";
+              repo = "libusb";
+              rev = "b7e4548958325b18feb73977163ad44398099534";
+              hash = "sha256-DjT7ooqQeRIXt2pRwznaT7twpzOVAea62ngJk1y2mUI=";
+            })
             (pkgs.fetchFromGitHub {
               name = "xlink";
               owner = "luxonis";
