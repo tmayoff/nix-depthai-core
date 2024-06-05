@@ -85,9 +85,33 @@
           };
 
           hardeningDisable = ["all"];
-          nativeBuildInputs = [pkgs.cmake];
+          nativeBuildInputs = [pkgs.cmake pkgs.pkg-config];
           buildInputs = [
             pkgs.gtest
+          ];
+        };
+
+        xlink = pkgs.stdenv.mkDerivation {
+          name = "xlink";
+          src = pkgs.fetchFromGitHub {
+            name = "xlink";
+            owner = "luxonis";
+            repo = "XLink";
+            rev = "e9eb1ef38030176ad70cddd3b545d5e6c509f1e1";
+            hash = "sha256-D0aKNni8LDqlWtllHwS/BQ2BGdB1GN1k9BDgjEgjEYM=";
+          };
+          nativeBuildInputs = [
+            pkgs.cmake
+            pkgs.pkg-config
+          ];
+
+          buildInputs = [
+            pkgs.libusb
+          ];
+
+          cmakeFlags = [
+            "-DHUNTER_ENABLED=false"
+            "-DXLINK_LIBUSB_SYSTEM=true"
           ];
         };
 
@@ -114,36 +138,19 @@
           name = "depthai";
           version = "2.25.1";
 
-          srcs = [
-            (pkgs.fetchFromGitHub {
-              name = "libusb";
-              owner = "luxonis";
-              repo = "libusb";
-              rev = "b7e4548958325b18feb73977163ad44398099534";
-              hash = "sha256-DjT7ooqQeRIXt2pRwznaT7twpzOVAea62ngJk1y2mUI=";
-            })
-            (pkgs.fetchFromGitHub {
-              name = "xlink";
-              owner = "luxonis";
-              repo = "XLink";
-              rev = "e9eb1ef38030176ad70cddd3b545d5e6c509f1e1";
-              hash = "sha256-D0aKNni8LDqlWtllHwS/BQ2BGdB1GN1k9BDgjEgjEYM=";
-            })
-            (pkgs.fetchFromGitHub {
-              name = "libnop";
-              owner = "luxonis";
-              repo = "libnop";
-              rev = "2f19ad3ff3b40a323fa6777cb0b7594202769a72";
-              hash = "sha256-SIAceW4rpFeMROjPrKms1rJSXj/EX9bAEFqt9Su/LQk=";
-            })
-            (pkgs.fetchzip {
-              name = "depthai-core";
-              url = "https://github.com/luxonis/depthai-core/releases/download/v2.25.1/depthai-core-v2.25.1.tar.gz";
-              hash = "sha256-lsQzdkUz2Soil49CnXHfF/h7M0iFOjnx7W/xzOBAKzE=";
-            })
-          ];
+          src = pkgs.fetchzip {
+            name = "depthai-core";
+            url = "https://github.com/luxonis/depthai-core/releases/download/v2.25.1/depthai-core-v2.25.1.tar.gz";
+            hash = "sha256-lsQzdkUz2Soil49CnXHfF/h7M0iFOjnx7W/xzOBAKzE=";
+          };
 
-          sourceRoot = "depthai-core";
+          # src = pkgs.fetchFromGitHub {
+          #   name = "depthai-core";
+          #   owner = "luxonis";
+          #   repo = "depthai-core";
+          #   rev = "v2.25.1";
+          #   hash = "sha256-jcuuUH+UMgQaNNnY6tpoA4rj0vq/pXcN+0gB11Ucx4A=";
+          # };
 
           patches = [
             ./patches/deps.patch
@@ -164,11 +171,11 @@
             libarchive
             fp16
             nlohmann_json
-            # libnop
-            libusb
+            libnop
+            xlink
 
             # Optional features
-            # opencv
+            opencv
             # pcl
           ];
 
@@ -176,8 +183,6 @@
             "-DBUILD_SHARED_LIBS=ON"
             "-DHUNTER_ENABLED=Off"
             "-DDEPTHAI_ENABLE_BACKWARD=Off"
-            "-DDEPTHAI_XLINK_LOCAL=/build/xlink"
-            "-DXLINK_LIBUSB_LOCAL=/build/libusb"
             "-DDEPTHAI_BINARIES_RESOURCE_COMPILE=ON"
             "-DDEPTHAI_BOOTLOADER_FWP=${bootloader}"
             "-DDEPTHAI_DEVICE_FWP=${firmware}"
