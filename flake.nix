@@ -86,9 +86,8 @@
 
           hardeningDisable = ["all"];
           nativeBuildInputs = [pkgs.cmake pkgs.pkg-config];
-          buildInputs = [
-            pkgs.gtest
-          ];
+          buildInputs = [pkgs.gtest];
+          cmakeFlags = ["-DCMAKE_INSTALL_LIBDIR=lib"];
         };
 
         xlink = pkgs.stdenv.mkDerivation {
