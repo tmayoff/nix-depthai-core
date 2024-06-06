@@ -76,12 +76,17 @@
 
         libnop = pkgs.stdenv.mkDerivation {
           name = "libnop";
-          src = pkgs.fetchFromGitHub {
-            name = "libnop";
-            owner = "luxonis";
-            repo = "libnop";
-            rev = "2f19ad3ff3b40a323fa6777cb0b7594202769a72";
-            hash = "sha256-SIAceW4rpFeMROjPrKms1rJSXj/EX9bAEFqt9Su/LQk=";
+          # src = pkgs.fetchFromGitHub {
+          #   name = "libnop";
+          #   owner = "luxonis";
+          #   repo = "libnop";
+          #   rev = "2f19ad3ff3b40a323fa6777cb0b7594202769a72";
+          #   hash = "sha256-SIAceW4rpFeMROjPrKms1rJSXj/EX9bAEFqt9Su/LQk=";
+          # };
+
+          src = pkgs.fetchurl {
+            url = "https://github.com/luxonis/libnop/archive/ab842f51dc2eb13916dc98417c2186b78320ed10.tar.gz";
+            hash = "sha256-eOrFGEJ/6jW6uGe7Mil7MMX/cwttMntlh1l+jWuoEK8=";
           };
 
           hardeningDisable = ["all"];
