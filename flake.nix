@@ -167,13 +167,16 @@
             zlib
             libarchive
             fp16
-            nlohmann_json
-            libnop
             xlink
+          ];
+
+          propagatedBuildInputs = with pkgs; [
+            libnop
+            nlohmann_json
 
             # Optional features
             opencv
-            # pcl
+            pcl
           ];
 
           cmakeFlags = [
