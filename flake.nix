@@ -167,12 +167,12 @@
             zlib
             libarchive
             fp16
-            xlink
           ];
 
           propagatedBuildInputs = with pkgs; [
             libnop
             nlohmann_json
+            xlink
 
             # Optional features
             opencv
