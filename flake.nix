@@ -184,6 +184,7 @@
             "-DHUNTER_ENABLED=Off"
             "-DDEPTHAI_ENABLE_BACKWARD=Off"
             "-DDEPTHAI_BINARIES_RESOURCE_COMPILE=ON"
+            "-DDEPTHAI_PCL_SUPPORT=ON"
             "-DDEPTHAI_BOOTLOADER_FWP=${bootloader}"
             "-DDEPTHAI_DEVICE_FWP=${firmware}"
           ];
